@@ -1,0 +1,77 @@
+import java.math.BigInteger;
+import java.util.Random;
+
+/**
+ * 
+ */
+
+/**
+ * @author cfahim
+ *
+ */
+public class MillerRabin {
+  private BigInteger m_prime;
+  private long m_2factor;
+  private BigInteger m_oddfactor;
+  private boolean m_isprime;  
+  private long m_steps;
+  private final BigInteger TWO = BigInteger.valueOf(2);
+	
+  public MillerRabin(BigInteger bi, long steps)
+	{		
+    this.setprime(bi);	
+    this.m_steps = steps;
+    this.m_isprime = PrimalityTest();
+	}
+
+  private boolean PrimalityTest() {
+    if(!m_prime.testBit(0) || m_prime.compareTo(new BigInteger("3")) <= 0)
+      return false;
+        
+    GetFactorization(m_prime.subtract(BigInteger.ONE));    
+    
+    for(long i = m_steps; i > 0; i--)
+    {
+      BigInteger rand = GetRandBigInt();
+    }
+    
+    
+    return true;
+       
+    
+  }
+
+  private BigInteger GetRandBigInt(){
+    BigInteger range = this.m_prime.shiftRight(1);
+    
+    String randBigIntstr = ""; 
+    for(int i = 0; i < range.toString().length(); i++)
+    {
+      Random rand = new Random();
+      randBigIntstr += rand.nextInt();      
+    }
+    
+    return range;
+  }
+  
+  private void GetFactorization(BigInteger divider) {
+    // TODO Auto-generated method stub
+    long rtn = 0;
+    while(!divider.testBit(0))
+    {
+      rtn++;
+      divider = divider.divide(TWO);
+    }
+    this.m_2factor = rtn;
+    this.m_oddfactor = divider;
+  }
+
+  public void setprime(BigInteger m_prime) {
+    this.m_prime = m_prime;
+  }
+
+  public BigInteger getprime() {
+    return m_prime;
+  }
+
+}

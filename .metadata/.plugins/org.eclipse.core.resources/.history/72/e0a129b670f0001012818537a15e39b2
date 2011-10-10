@@ -1,0 +1,42 @@
+import java.math.BigInteger;
+
+/**
+ * 
+ */
+
+/**
+ * @author cfahim
+ *
+ */
+public class MillerRabin {
+  private BigInteger m_prime;
+  private boolean m_isprime;
+  private long m_steps;
+	
+  public MillerRabin(BigInteger bi, long steps)
+	{		
+    this.setprime(bi);	
+    this.m_steps = steps;
+    this.m_isprime = PrimalityTest();
+	}
+
+  private boolean PrimalityTest() {
+    if(!m_prime.testBit(0) || m_prime.compareTo(new BigInteger("3")) < -1)
+      return false;
+    
+    
+    
+    return true;
+       
+    
+  }
+
+  public void setprime(BigInteger m_prime) {
+    this.m_prime = m_prime;
+  }
+
+  public BigInteger getprime() {
+    return m_prime;
+  }
+
+}

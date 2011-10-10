@@ -1,0 +1,5 @@
+what,kind,bundleId,bundleVersion,description,time
+stopped,bundle,org.eclipse.rse.importexport,1.2.101.v201008191400,"org.eclipse.rse.importexport",1317949099066
+stopped,bundle,org.eclipse.rse.subsystems.shells.telnet,1.2.0.v200905272300,"org.eclipse.rse.subsystems.shells.telnet",1317949099111
+stopped,bundle,org.eclipse.rse.shells.ui,3.0.200.v201006041352,"org.eclipse.rse.shells.ui",1317949099129
+stopped,bundle,org.eclipse.rse.files.ui,3.1.102.R32x_v201102011435,"org.eclipse.rse.files.ui",1317949099130

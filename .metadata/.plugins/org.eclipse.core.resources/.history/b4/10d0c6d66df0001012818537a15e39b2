@@ -1,0 +1,18 @@
+import java.math.BigInteger;
+
+/**
+ * 
+ */
+
+/**
+ * @author cfahim
+ *
+ */
+public class MillerRabin {
+  private BigInteger m_prime;
+	public MillerRabin(BigInteger bi)
+	{
+		m_prime = bi;
+	}
+
+}
