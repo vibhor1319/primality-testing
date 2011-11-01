@@ -106,8 +106,8 @@ public class AKS
 			return true;
 		}
 		
-		// For a = 1 to  do
-		// if (X+a)n≠ Xn+a (mod Xr − 1,n), output composite;
+		// For a = 1 to sqrt(totient)log(n) do
+		// if (X+a)^n <>�X^n + a (mod X^r - 1,n), output composite;
 
 		n_isprime = true;
 	    return n_isprime;
