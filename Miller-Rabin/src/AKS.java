@@ -76,11 +76,11 @@ public class AKS
 		// Find the smallest r such that o_r(n) > log^2 n
 		// o_r(n) is the multiplicative order of n modulo r
 		// the multiplicative order of n modulo r is the 
-		// smallest positive integer k with	n^k ≡ 1 (mod r).
+		// smallest positive integer k with	n^k = 1 (mod r).
 		double log = this.log();
 		double logSquared = log*log;
 		int k = 1;
-		BigInteger r = BigInteger.ONE;
+		BigInteger r = new BigInteger("2");
 		do
 		{
 			r.add(BigInteger.ONE);
@@ -113,7 +113,7 @@ public class AKS
 	    return n_isprime;
 	}
 
-
+	// TODO test this method
 	int multiplicativeOrder(BigInteger r)
 	{
 		int k = 0;
