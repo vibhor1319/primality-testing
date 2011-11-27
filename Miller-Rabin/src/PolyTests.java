@@ -254,8 +254,8 @@ public class PolyTests
 		System.out.println("testModBigInteger: t = " + t);
 		
 		assertEquals(30,t.degree());
-		assertEquals(new BigInteger("2"), t.coefficient(30));
-		assertEquals(new BigInteger("2"), t.coefficient(25));
+		assertEquals(BigInteger.valueOf(2), t.coefficient(30));
+		assertEquals(BigInteger.valueOf(2), t.coefficient(25));
 		assertEquals(BigInteger.ZERO, t.coefficient(10));
 	}
 
@@ -346,6 +346,47 @@ public class PolyTests
 		assertEquals(1,a.degree());
 		assertEquals(BigInteger.ONE,a.coefficient(1));
 		System.out.println("testModPoly: a = " + a);
-}
+	}
 
+	/**
+	 * Test method for {@link Poly#mod(Poly)}.
+	 */
+	@Test
+	public void testModBigPoly2() 
+	{
+		Poly p = new Poly(BigInteger.ONE, 13).plus(new Poly(BigInteger.ONE,0));
+		Poly q = new Poly(BigInteger.ONE, 11).minus(new Poly(BigInteger.ONE,0));
+		Poly r = new Poly(BigInteger.valueOf(13), 0);
+		
+		Poly t = p.mod(q);
+		System.out.println("testModBigPoly2: t = " + t);
+		
+		assertEquals(2,t.degree());
+		assertEquals(BigInteger.ONE, t.coefficient(2));
+		assertEquals(BigInteger.ONE, t.coefficient(0));
+		assertEquals(BigInteger.ZERO, t.coefficient(1));
+	}
+
+	@Test
+	public void testModPow()
+	{
+		Poly p = new Poly(BigInteger.ONE, 13).plus(new Poly(BigInteger.ONE,0));
+		Poly q = new Poly(BigInteger.ONE, 11).minus(new Poly(BigInteger.ONE,0));
+		Poly r = new Poly(BigInteger.valueOf(13), 0);
+		Poly s = p.mod(q);
+
+		Poly t = new Poly(BigInteger.ONE, 1).plus(new Poly(BigInteger.ONE,0));
+		Poly u = t.modPow(BigInteger.valueOf(13), q, BigInteger.valueOf(13));
+		
+		System.out.println("testModPow: s = " + s);
+		System.out.println("testModPow: u = " + u);
+		System.out.println("testModPow: s.degree = " + s.degree());
+		System.out.println("testModPow: u.degree = " + u.degree());
+		
+		s.printMonos();
+		u.printMonos();
+		
+		assertEquals(s,u);
+	}
+	
 }

@@ -11,6 +11,8 @@ import java.math.BigInteger;
 public class AKS 
 {
 
+	static boolean verbose = true;
+	
 	BigInteger n;
 	boolean n_isprime;
 	BigInteger factor;
@@ -23,56 +25,69 @@ public class AKS
 	
 	public boolean isPrime() 
 	{
+		// TODO: Do this in linear time http://www.ams.org/journals/mcom/1998-67-223/S0025-5718-98-00952-1/S0025-5718-98-00952-1.pdf
 		// If ( n = a^b for a in natural numbers and b > 1), output COMPOSITE
-		BigInteger a = new BigInteger("2");
-		BigInteger aSquared = a.pow(2);;
+		BigInteger a = BigInteger.valueOf(2);
+		BigInteger aSquared;
 		
-		while (aSquared.compareTo(n) < 0)
+		do 
 		{
 			BigInteger result;
-			aSquared = a.pow(2);
 
-			int power = 2;
+			int power = 0;
 			int comparison;
 			
 			do
 			{
-				result = a.pow(power);
 				power++;
+				result = a.pow(power);
 				comparison = n.compareTo(result);
 			}
-			while( comparison <= 0 && power < Integer.MAX_VALUE );
+			while( comparison > 0 && power < Integer.MAX_VALUE );
 			
 			if( comparison == 0 )
 			{
+				if (verbose) System.out.println(n + " is a perfect power of " + a);
 				factor = a;
 				n_isprime = false;
 				return n_isprime;
 			}
+			
+			if (verbose) System.out.println(n + " is not a perfect power of " + a);
+
+			a = a.add(BigInteger.ONE);
+			aSquared = a.pow(2);
 		}
+		while (aSquared.compareTo(this.n) < 0);
+		if (verbose) System.out.println(n + " is not a perfect power of any integer less than its square root");
 		
+
 		// Find the smallest r such that o_r(n) > log^2 n
 		// o_r(n) is the multiplicative order of n modulo r
 		// the multiplicative order of n modulo r is the 
 		// smallest positive integer k with	n^k = 1 (mod r).
 		double log = this.log();
 		double logSquared = log*log;
-		int k = 1;
-		BigInteger r = new BigInteger("2");
+		BigInteger k = BigInteger.ONE;
+		BigInteger r = BigInteger.ONE;
 		do
 		{
-			r.add(BigInteger.ONE);
+			r = r.add(BigInteger.ONE);
+			if (verbose) System.out.println("trying r = " + r);
 			k = multiplicativeOrder(r);
 		}
-		while( k < logSquared );
+		while( k.doubleValue() < logSquared );
+		if (verbose) System.out.println("r is " + r);
+
 		
-		// If 1 < (a,n) < n for some a <= r, output COMPOSITE
-		for( BigInteger i = BigInteger.valueOf(2); i.compareTo(r) <= 0; i.add(BigInteger.ONE) )
+		// If 1 < gcd(a,n) < n for some a <= r, output COMPOSITE
+		for( BigInteger i = BigInteger.valueOf(2); i.compareTo(r) <= 0; i = i.add(BigInteger.ONE) )
 		{
-			BigInteger gcd = n.gcd(a);
+			BigInteger gcd = n.gcd(i);
+			if (verbose) System.out.println("gcd(" + n + "," + i + ") = " + gcd);
 			if ( gcd.compareTo(BigInteger.ONE) > 0 && gcd.compareTo(n) < 0 )
 			{
-				factor = a;
+				factor = i;
 				n_isprime = false;
 				return false;
 			}
@@ -97,13 +112,16 @@ public class AKS
 		Poly partialOutcome = new Poly(BigInteger.ONE, 1).modPow(n, modPoly, n);
 		for( int i = 1; i <= limit; i++ )
 		{
-			Poly polyI = new Poly(new BigInteger(Integer.toString(i)),0);
-			// X^n + i (mod X^r -1, n)
+			Poly polyI = new Poly(BigInteger.valueOf(i),0);
+			// X^n + i (mod X^r - 1, n)
 			Poly outcome = partialOutcome.plus(polyI);
 			Poly p = new Poly(BigInteger.ONE,1).plus(polyI).modPow(n, modPoly, n);
 			if( !outcome.equals(p) )
 			{
-				factor = new BigInteger(Integer.toString(i));
+				if (verbose) System.out.println( "(x+" + i + ")^" + n + " (mod x^" + r + " - 1, " + n + ") = " + outcome);
+				if (verbose) System.out.println( "x^" + n + " + " + i + " (mod x^" + r + " - 1, " + n + ") = " + p);
+				// if (verbose) System.out.println("(x+i)^" + n + " = x^" + n + " + " + i + " (mod x^" + r + " - 1, " + n + ") failed");
+				factor = BigInteger.valueOf(i);
 				n_isprime = false;
 				return n_isprime;
 			}
@@ -124,6 +142,8 @@ public class AKS
 	 */
 	BigInteger totient(BigInteger r)
 	{
+		// TODO: Implement a different algorithm from here
+		// http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=primeNumbers
 		BigInteger result = BigInteger.ZERO;
 		
 		for(BigInteger i = BigInteger.ZERO; i.compareTo(r) < 0; i = i.add(BigInteger.ONE))
@@ -136,20 +156,34 @@ public class AKS
 	}
 	
 	
-	// TODO test this method
-	int multiplicativeOrder(BigInteger r)
+	/***
+	 * Calculate the multiplicative order of n modulo r
+	 * This is defined as the smallest positive integer k 
+	 * for which n^k = 1 (mod r).
+	 * 
+	 * @param r modulus for mutliplicative order
+	 * @return multiplicative order or -1 if none exists
+	 */
+	BigInteger multiplicativeOrder(BigInteger r)
 	{
-		int k = 0;
-		int result;
+		// TODO Consider implementing an alternative algorith http://rosettacode.org/wiki/Multiplicative_order
+		BigInteger k = BigInteger.ZERO;
+		BigInteger result;
 		
 		do
 		{
-			k++;
-			result = n.modPow(new BigInteger(Long.toString(k)),r).intValue();
+			k = k.add(BigInteger.ONE);
+			result = this.n.modPow(k,r);
 		}
-		while( result != 1 );
+		while( result.compareTo(BigInteger.ONE) != 0 && r.compareTo(k) > 0);
 		
-		return k;
+		if (r.compareTo(k) <= 0)
+			return BigInteger.ONE.negate();
+		else
+		{
+			if (verbose) System.out.println(n + "^" + k + " mod " + r + " = " + result);
+			return k;
+		}
 	}
 	
 	

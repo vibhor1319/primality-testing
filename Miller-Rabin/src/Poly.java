@@ -34,6 +34,15 @@ public class Poly
 	}
 	
 	/**
+	 * Debugging method
+	 */
+	void printMonos()
+	{
+		for( int i = 0; i <= this.degree; i++ )
+			System.out.println(this.monos[i]);
+	}
+	
+	/**
 	 * Create the zero polynomial
 	 */
 	public Poly()
@@ -118,13 +127,18 @@ public class Poly
 		return s == "" ? "0" : s.substring(0,s.length()-3);
 	}
 
-	public boolean equals(Poly p)
+	@Override
+	public boolean equals(Object p)
 	{
-		if( this.degree != p.degree )
+		if (p == null) return false;
+	    if (p == this) return true;
+	    if (this.getClass() != p.getClass()) return false;
+	    
+	    if( this.degree != ((Poly) p).degree )
 			return false;
 		
-		for( int i = 0; i < degree; i++ )
-			if( monos[i].compareTo(p.monos[i]) != 0 )
+		for( int i = 0; i <= degree; i++ )
+			if( this.monos[i].compareTo(((Poly) p).monos[i]) != 0 )
 				return false;
 		
 		return true;
@@ -223,6 +237,8 @@ public class Poly
 		for( int i = 0; i <= remainder.degree; i++ )
 			remainder.monos[i] = monos[i].mod(m);
 
+		updateDegree(remainder);
+		
 		return remainder;
 	}
 
@@ -252,7 +268,7 @@ public class Poly
 		
 		int maxBits = exponent.bitLength();
 
-		Poly answer = new Poly();
+		Poly answer = new Poly(BigInteger.ONE,0);
 		for( int bit = 0; bit < maxBits; bit++ )
 		{
 			// explicitly break apart the multiplication and modulus
