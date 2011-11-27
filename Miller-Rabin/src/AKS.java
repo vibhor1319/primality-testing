@@ -13,6 +13,7 @@ public class AKS
 
 	static boolean verbose = true;
 	
+	double l = -1;
 	BigInteger n;
 	boolean n_isprime;
 	BigInteger factor;
@@ -27,38 +28,38 @@ public class AKS
 	{
 		// TODO: Do this in linear time http://www.ams.org/journals/mcom/1998-67-223/S0025-5718-98-00952-1/S0025-5718-98-00952-1.pdf
 		// If ( n = a^b for a in natural numbers and b > 1), output COMPOSITE
-		BigInteger a = BigInteger.valueOf(2);
+		BigInteger base = BigInteger.valueOf(2);
 		BigInteger aSquared;
 		
-		do 
+		do
 		{
 			BigInteger result;
 
-			int power = 0;
+			int power = Math.max((int) (log()/log(base) - 2),1);
 			int comparison;
 			
 			do
 			{
 				power++;
-				result = a.pow(power);
+				result = base.pow(power);
 				comparison = n.compareTo(result);
 			}
 			while( comparison > 0 && power < Integer.MAX_VALUE );
 			
 			if( comparison == 0 )
 			{
-				if (verbose) System.out.println(n + " is a perfect power of " + a);
-				factor = a;
+				if (verbose) System.out.println(n + " is a perfect power of " + base);
+				factor = base;
 				n_isprime = false;
 				return n_isprime;
 			}
 			
-			if (verbose) System.out.println(n + " is not a perfect power of " + a);
+			if (verbose) System.out.println(n + " is not a perfect power of " + base);
 
-			a = a.add(BigInteger.ONE);
-			aSquared = a.pow(2);
+			base = base.add(BigInteger.ONE);
+			aSquared = base.pow(2);
 		}
-		while (aSquared.compareTo(this.n) < 0);
+		while (aSquared.compareTo(this.n) <= 0);
 		if (verbose) System.out.println(n + " is not a perfect power of any integer less than its square root");
 		
 
@@ -190,6 +191,9 @@ public class AKS
 	// log base 2
 	double log()
 	{
+		if ( l != -1 )
+			return l;
+		
 		// from http://world.std.com/~reinhold/BigNumCalcSource/BigNumCalc.java
 		BigInteger b;
 		
@@ -197,12 +201,29 @@ public class AKS
 	    if (temp > 0) 
 	    {
 	    	b=n.shiftRight(temp); 
-	        return (Math.log(b.doubleValue()) + temp*Math.log(2));
+	        l = (Math.log(b.doubleValue()) + temp)*Math.log(2);
 	    }
 	    else 
-	    	return (Math.log(n.doubleValue()));
+	    	l = (Math.log(n.doubleValue()))*Math.log(2);
+
+	    return l;
 	}
 	
+	// log base 2
+	double log(BigInteger x)
+	{
+		// from http://world.std.com/~reinhold/BigNumCalcSource/BigNumCalc.java
+		BigInteger b;
+		
+	    int temp = x.bitLength() - 1000;
+	    if (temp > 0) 
+	    {
+	    	b=x.shiftRight(temp); 
+	        return (Math.log(b.doubleValue()) + temp)*Math.log(2);
+	    }
+	    else 
+	    	return (Math.log(x.doubleValue())*Math.log(2));
+	}
 	
 	public BigInteger getFactor()
 	{
