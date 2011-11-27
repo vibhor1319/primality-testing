@@ -21,28 +21,6 @@ public class AKS
 		
 	}
 	
-	// log base 2
-	double log()
-	{
-		// from http://world.std.com/~reinhold/BigNumCalcSource/BigNumCalc.java
-		BigInteger b;
-		
-	    int temp = n.bitLength() - 1000;
-	    if (temp > 0) 
-	    {
-	    	b=n.shiftRight(temp); 
-	        return (Math.log(b.doubleValue()) + temp*Math.log(2));
-	    }
-	    else 
-	    	return (Math.log(n.doubleValue()));
-	}
-	
-	
-	public BigInteger getFactor()
-	{
-		return factor;
-	}
-	
 	public boolean isPrime() 
 	{
 		// If ( n = a^b for a in natural numbers and b > 1), output COMPOSITE
@@ -94,6 +72,7 @@ public class AKS
 			BigInteger gcd = n.gcd(a);
 			if ( gcd.compareTo(BigInteger.ONE) > 0 && gcd.compareTo(n) < 0 )
 			{
+				factor = a;
 				n_isprime = false;
 				return false;
 			}
@@ -105,14 +84,58 @@ public class AKS
 			n_isprime = true;
 			return true;
 		}
-		
-		// For a = 1 to sqrt(totient)log(n) do
-		// if (X+a)^n <> X^n + a (mod X^r - 1,n), output composite;
 
+		
+		// For i = 1 to sqrt(totient)log(n) do
+		// if (X+i)^n <> X^n + i (mod X^r - 1,n), output composite;
+
+		// sqrt(totient)log(n)
+		int limit = (int) (Math.sqrt(totient(r).doubleValue()) * this.log());
+		// X^r - 1
+		Poly modPoly = new Poly(BigInteger.ONE, r.intValue()).minus(new Poly(BigInteger.ONE,0));
+		// X^n (mod X^r - 1, n)
+		Poly partialOutcome = new Poly(BigInteger.ONE, 1).modPow(n, modPoly, n);
+		for( int i = 1; i <= limit; i++ )
+		{
+			Poly polyI = new Poly(new BigInteger(Integer.toString(i)),0);
+			// X^n + i (mod X^r -1, n)
+			Poly outcome = partialOutcome.plus(polyI);
+			Poly p = new Poly(BigInteger.ONE,1).plus(polyI).modPow(n, modPoly, n);
+			if( !outcome.equals(p) )
+			{
+				factor = new BigInteger(Integer.toString(i));
+				n_isprime = false;
+				return n_isprime;
+			}
+		}
+		
 		n_isprime = true;
 	    return n_isprime;
 	}
 
+	
+	/***
+	 * Calculate the totient of a BigInteger r
+	 * Try every integer less than r and see if it divides r
+	 * If not, increase the totient by one
+	 * 
+	 * @param r BigInteger to calculate the totient of
+	 * @return phi(r)--number of integers less than r that are coprime
+	 */
+	BigInteger totient(BigInteger r)
+	{
+		BigInteger result = BigInteger.ZERO;
+		
+		for(BigInteger i = BigInteger.ZERO; i.compareTo(r) < 0; i = i.add(BigInteger.ONE))
+		{
+			if( r.gcd(i).compareTo(BigInteger.ONE) == 0 )
+				result = result.add(BigInteger.ONE);
+		}
+		
+		return result;
+	}
+	
+	
 	// TODO test this method
 	int multiplicativeOrder(BigInteger r)
 	{
@@ -122,11 +145,34 @@ public class AKS
 		do
 		{
 			k++;
-			result = n.pow(k).mod(r).intValue();
+			result = n.modPow(new BigInteger(Long.toString(k)),r).intValue();
 		}
 		while( result != 1 );
 		
 		return k;
+	}
+	
+	
+	// log base 2
+	double log()
+	{
+		// from http://world.std.com/~reinhold/BigNumCalcSource/BigNumCalc.java
+		BigInteger b;
+		
+	    int temp = n.bitLength() - 1000;
+	    if (temp > 0) 
+	    {
+	    	b=n.shiftRight(temp); 
+	        return (Math.log(b.doubleValue()) + temp*Math.log(2));
+	    }
+	    else 
+	    	return (Math.log(n.doubleValue()));
+	}
+	
+	
+	public BigInteger getFactor()
+	{
+		return factor;
 	}
 	
 }

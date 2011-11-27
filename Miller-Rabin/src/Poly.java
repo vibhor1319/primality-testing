@@ -247,4 +247,32 @@ public class Poly
 		return remainder;
 	}
 	
+	public Poly modPow(BigInteger exponent, Poly mPoly, BigInteger mBigInteger)
+	{
+		
+		int maxBits = exponent.bitLength();
+
+		Poly answer = new Poly();
+		for( int bit = 0; bit < maxBits; bit++ )
+		{
+			// explicitly break apart the multiplication and modulus
+			answer = answer.times(answer);
+			answer = answer.mod(mPoly);
+			answer = answer.mod(mBigInteger);
+			
+			// Consider bits from left to right
+			// if the bit is set multiply by this
+			if( exponent.testBit(maxBits - bit - 1) )
+			{
+				// explicitly break apart the multiplication and modulus
+				answer = answer.times(this);
+				answer = answer.mod(mPoly);
+				answer = answer.mod(mBigInteger);
+			}
+				
+		}
+			
+		return answer;
+	}
+	
 }
