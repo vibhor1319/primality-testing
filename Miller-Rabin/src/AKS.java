@@ -11,19 +11,26 @@ import java.math.BigInteger;
 public class AKS 
 {
 
-	static boolean verbose = true;
+	static boolean verbose = false;
 	
-	double l = -1;
 	BigInteger n;
 	boolean n_isprime;
 	BigInteger factor;
-	
+
+	/***
+	 * Constructor--just save the number
+	 * @param n
+	 */
 	public AKS(BigInteger n)
 	{
 		this.n = n;
-		
 	}
 	
+	/***
+	 * Run the AKS primality test
+	 * 
+	 * @return true if n is prime
+	 */
 	public boolean isPrime() 
 	{
 		// TODO: Do this in linear time http://www.ams.org/journals/mcom/1998-67-223/S0025-5718-98-00952-1/S0025-5718-98-00952-1.pdf
@@ -94,6 +101,7 @@ public class AKS
 			}
 		}
 		
+		
 		// If n <= r, output PRIME
 		if( n.compareTo(r) <= 0 )
 		{
@@ -135,28 +143,33 @@ public class AKS
 	
 	/***
 	 * Calculate the totient of a BigInteger r
-	 * Try every integer less than r and see if it divides r
-	 * If not, increase the totient by one
+	 * Based on this algorithm:
+	 * 
+	 * http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=primeNumbers
 	 * 
 	 * @param r BigInteger to calculate the totient of
 	 * @return phi(r)--number of integers less than r that are coprime
 	 */
-	BigInteger totient(BigInteger r)
-	{
-		// TODO: Implement a different algorithm from here
-		// http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=primeNumbers
-		BigInteger result = BigInteger.ZERO;
-		
-		for(BigInteger i = BigInteger.ZERO; i.compareTo(r) < 0; i = i.add(BigInteger.ONE))
-		{
-			if( r.gcd(i).compareTo(BigInteger.ONE) == 0 )
-				result = result.add(BigInteger.ONE);
-		}
-		
-		return result;
-	}
-	
-	
+    BigInteger totient(BigInteger n) 
+    { 
+    	BigInteger result = n; 
+      
+    	for( BigInteger i = BigInteger.valueOf(2); n.compareTo(i.multiply(i)) > 0; i = i.add(BigInteger.ONE) ) 
+    	{ 
+    		if (n.mod(i).compareTo(BigInteger.ZERO) == 0) 
+    			result = result.subtract(result.divide(i));
+    		
+    		while (n.mod(i).compareTo(BigInteger.ZERO) == 0)
+    			n = n.divide(i); 
+    	}
+    	
+    	if (n.compareTo(BigInteger.ONE) > 0) 
+    		result = result.subtract(result.divide(n));
+    	
+    	return result;
+    	
+    } 
+
 	/***
 	 * Calculate the multiplicative order of n modulo r
 	 * This is defined as the smallest positive integer k 
@@ -167,7 +180,7 @@ public class AKS
 	 */
 	BigInteger multiplicativeOrder(BigInteger r)
 	{
-		// TODO Consider implementing an alternative algorith http://rosettacode.org/wiki/Multiplicative_order
+		// TODO Consider implementing an alternative algorithm http://rosettacode.org/wiki/Multiplicative_order
 		BigInteger k = BigInteger.ZERO;
 		BigInteger result;
 		
@@ -187,12 +200,18 @@ public class AKS
 		}
 	}
 	
-	
-	// log base 2
+
+	// Save log n here
+	double logSave = -1;
+
+	/***
+	 * 
+	 * @return log base 2 of n
+	 */
 	double log()
 	{
-		if ( l != -1 )
-			return l;
+		if ( logSave != -1 )
+			return logSave;
 		
 		// from http://world.std.com/~reinhold/BigNumCalcSource/BigNumCalc.java
 		BigInteger b;
@@ -201,15 +220,20 @@ public class AKS
 	    if (temp > 0) 
 	    {
 	    	b=n.shiftRight(temp); 
-	        l = (Math.log(b.doubleValue()) + temp)*Math.log(2);
+	        logSave = (Math.log(b.doubleValue()) + temp)*Math.log(2);
 	    }
 	    else 
-	    	l = (Math.log(n.doubleValue()))*Math.log(2);
+	    	logSave = (Math.log(n.doubleValue()))*Math.log(2);
 
-	    return l;
+	    return logSave;
 	}
+
 	
-	// log base 2
+	/**
+	 * log base 2 method that takes a parameter
+	 * @param x
+	 * @return
+	 */
 	double log(BigInteger x)
 	{
 		// from http://world.std.com/~reinhold/BigNumCalcSource/BigNumCalc.java

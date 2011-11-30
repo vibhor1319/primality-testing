@@ -128,6 +128,11 @@ public class Poly
 	}
 
 	@Override
+	/***
+	 * Implement an equals method
+	 * 
+	 * @returns true if the two objects are the same
+	 */
 	public boolean equals(Object p)
 	{
 		if (p == null) return false;
@@ -144,6 +149,12 @@ public class Poly
 		return true;
 	}
 
+	/**
+	 * Add two polynomials together
+	 * 
+	 * @param p
+	 * @return the sum of this and p
+	 */
 	public Poly plus(Poly p)
 	{
 		int maxDegree = Math.max(this.degree, p.degree);
@@ -158,6 +169,12 @@ public class Poly
 		return sum;
 	}
 	
+	/***
+	 * Subtract two polynomials
+	 * 
+	 * @param p
+	 * @return this minus p
+	 */
 	public Poly minus(Poly p)
 	{
 		int maxDegree = Math.max(this.degree, p.degree);
@@ -263,6 +280,15 @@ public class Poly
 		return remainder;
 	}
 	
+	/***
+	 * Exponentiate a polynomial with the coefficients mod a constant
+	 * and the polynomial mod another polynomial
+	 * 
+	 * @param exponent
+	 * @param mPoly
+	 * @param mBigInteger
+	 * @return this^exponent (mod mBigInteger, mPoly)
+	 */
 	public Poly modPow(BigInteger exponent, Poly mPoly, BigInteger mBigInteger)
 	{
 		
