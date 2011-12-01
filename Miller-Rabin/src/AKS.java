@@ -1,4 +1,6 @@
 import java.math.BigInteger;
+import java.lang.Thread;
+
 
 /**
  * 
@@ -8,7 +10,7 @@ import java.math.BigInteger;
  * @author Vincent
  *
  */
-public class AKS 
+public class AKS extends Thread
 {
 
 	static boolean verbose = false;
@@ -16,6 +18,7 @@ public class AKS
 	BigInteger n;
 	boolean n_isprime;
 	BigInteger factor;
+	double timeelapsed;
 
 	/***
 	 * Constructor--just save the number
@@ -25,6 +28,27 @@ public class AKS
 	{
 		this.n = n;
 	}
+	
+	/***
+	 * Run AKS.isprime as a thread
+	 */
+	public void run()
+	{
+	  this.isPrime();
+	}
+	
+	/***
+	 * Run the AKS primality test and time it
+	 * 
+	 * @return true if n is prime
+	 */
+	public boolean isPrimeTimed()
+  {
+    double start = System.currentTimeMillis();
+    boolean rtn = isPrime();
+    timeelapsed = System.currentTimeMillis() - start;
+    return rtn;
+  }
 	
 	/***
 	 * Run the AKS primality test
@@ -253,5 +277,9 @@ public class AKS
 	{
 		return factor;
 	}
+
+  public double GetElapsedTime() {
+    return timeelapsed;
+  }
 	
 }
