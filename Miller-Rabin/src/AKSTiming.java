@@ -14,7 +14,7 @@ import java.security.SecureRandom;
 public class AKSTiming 
 {
 
-	static int maxBits = 256;
+	static int maxBits = 64;
 	static int iterations = 32;
 	/**
 	 * @param args
@@ -24,7 +24,7 @@ public class AKSTiming
 		
 		SecureRandom r = new SecureRandom();
 		
-		for( int bits = 8; bits <= maxBits; bits *= 2 )
+		for( int bits = 8; bits <= maxBits; bits += 2 )
 		{
 			long cumulativeSum;
 
